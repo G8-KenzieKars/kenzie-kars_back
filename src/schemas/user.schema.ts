@@ -1,17 +1,21 @@
 import { z } from "zod";
 import { addressSchemaRequest, addressSchemaResponse } from "./address.schema";
 
-const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{6,100}$/;
+const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*]).{6,100}$/;
 
 const userEmailSchema = z.object({
   email: z.string().email().max(50, "Invalid email"),
 });
 
 const userPasswordSchema = z.object({
-  password: z.string().refine((value) => passwordRegex.test(value), {
-    message:
-      "Password must contain at least 6 characters, including at least one letter and one number",
-  }),
+  password: z
+    .string()
+    .min(6, "Password must have at least 6 characters")
+    .max(100, "Password cannot exceed 100 characters")
+    .regex(
+      /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*]*$/,
+      "Password must contain at least one letter and one number"
+    ),
 });
 
 const userSchemaRequest = userPasswordSchema.extend({
